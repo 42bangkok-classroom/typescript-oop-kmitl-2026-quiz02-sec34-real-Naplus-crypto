@@ -51,17 +51,15 @@ interface User {
 interface NewUserInput {
   name?: string;
   phone?: string;
-  address?: {
-    street?: string;
-    suite?: string;
-    city?: string;
-    zipcode?: string;
-    geo?: {
-      lat?: string;
-      lng?: string;
-    };
-  };
+
+  username?: string;
+  email?: string;
+  website?: string;
+  company?: unknown;
+
+  address?: Address | null;
 }
+
 
 /* ---------- Function ---------- */
 

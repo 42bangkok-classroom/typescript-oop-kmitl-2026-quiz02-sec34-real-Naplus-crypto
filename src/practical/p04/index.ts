@@ -48,16 +48,17 @@ export async function getTodosByUserId(
   id: number
 ): Promise<UserWithTodos | "Invalid id"> {
   try {
-    const [userResponse, todoResponse] = await Promise.all([
+    const [userRes, todoRes] = await Promise.all([
       axios.get<User[]>(USER_API),
       axios.get<Todo[]>(TODO_API),
     ]);
 
-    const users = userResponse.data;
-    const todos = todoResponse.data;
+    const users = userRes.data;
+    const todos = todoRes.data;
 
     const foundUser = users.find((user) => user.id === id);
 
+    // ❗ สำคัญที่สุด
     if (!foundUser) {
       return "Invalid id";
     }
@@ -69,9 +70,9 @@ export async function getTodosByUserId(
       name: foundUser.name,
       address: foundUser.address,
       phone: foundUser.phone,
-      todos: userTodos,
+      todos: userTodos, // ว่างได้
     };
-  } catch (error) {
-    throw error;
+  } catch {
+    return "Invalid id";
   }
 }

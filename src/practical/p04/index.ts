@@ -47,28 +47,38 @@ interface UserWithTodos {
 export async function getTodosByUserId(
   id: number
 ): Promise<UserWithTodos | "Invalid id"> {
+  if (id <= 0) {
+    return "Invalid id";
+  }
+
   try {
-    //  เรียก axios ตามลำดับ
-    const userResponse = await axios.get<User[]>(USER_API);
+    // ✅ เรียก axios ตามลำดับ (ห้าม Promise.all)
+    const userResponse = await axios.get<User | User[]>(
+      `${USER_API}/${id}`
+    );
     const todoResponse = await axios.get<Todo[]>(TODO_API);
 
-    const users = userResponse.data;
-    const todos = todoResponse.data;
+    const userData = userResponse.data;
 
-    const foundUser = users.find((user) => user.id === id);
+    // ✅ รองรับทั้ง array และ object
+    const foundUser: User | undefined = Array.isArray(userData)
+      ? userData.find((u) => u.id === id)
+      : userData;
 
-    if (!foundUser) {
+    if (!foundUser || foundUser.id !== id) {
       return "Invalid id";
     }
 
-    const userTodos = todos.filter((todo) => todo.userId === id);
+    const todos = todoResponse.data.filter(
+      (todo) => todo.userId === id
+    );
 
     return {
       id: foundUser.id,
       name: foundUser.name,
       address: foundUser.address,
       phone: foundUser.phone,
-      todos: userTodos, // ว่างได้
+      todos,
     };
   } catch {
     return "Invalid id";

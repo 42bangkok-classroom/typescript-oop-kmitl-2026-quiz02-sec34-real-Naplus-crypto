@@ -48,17 +48,15 @@ export async function getTodosByUserId(
   id: number
 ): Promise<UserWithTodos | "Invalid id"> {
   try {
-    const [userRes, todoRes] = await Promise.all([
-      axios.get<User[]>(USER_API),
-      axios.get<Todo[]>(TODO_API),
-    ]);
+    //  เรียก axios ตามลำดับ
+    const userResponse = await axios.get<User[]>(USER_API);
+    const todoResponse = await axios.get<Todo[]>(TODO_API);
 
-    const users = userRes.data;
-    const todos = todoRes.data;
+    const users = userResponse.data;
+    const todos = todoResponse.data;
 
     const foundUser = users.find((user) => user.id === id);
 
-    // ❗ สำคัญที่สุด
     if (!foundUser) {
       return "Invalid id";
     }
